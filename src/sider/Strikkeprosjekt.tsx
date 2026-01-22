@@ -3,44 +3,68 @@ import {supabase} from "../lib/supabase.ts";
 import Strikkeprosjekt from "../components/Strikkeprosjekt.tsx";
 import StrikkeprosjektForm from "../components/StrikkeprosjektForm.tsx";
 import {Box, Heading} from "@navikt/ds-react";
+import {useSession} from "../context/SessionContext.tsx";
 
-export type Prosjekt = {
+type Reaction = {
+    emoji: string;
+    user_id: string;
+};
+
+type Prosjekt = {
     id: number;
+    user_id?: string;
     tittel?: string;
     bilde?: string;
+    reactions?: Reaction[]; // <-- reactions is optional array of Reaction
 };
 
 export default function Strikkeprosjekter() {
-    const [prosjekter, setProsjekter] = useState<Prosjekt[]>([]);
+    const session = useSession();
+    const [mineProsjekter, setMineProsjekter] = useState<Prosjekt[]>([]);
+    const [andreProsjekter, setAndreProsjekter] = useState<Prosjekt[]>([]);
+
+    if (!session) return; // do nothing if session is null
+    const userId = session.user.id;
 
     useEffect(() => {
         const fetchProsjekter = async () => {
-            const { data, error } = await supabase
+            const { data: mineProsjekter } = await supabase
                 .from("strikkeprosjekt")
-                .select("*");
+                .select("*")
+                .eq("user_id", userId);
 
-            console.log("DATA:", data);
-            console.log("ERROR:", error);
+            const { data: andreProsjekter } = await supabase
+                .from("strikkeprosjekt")
+                .select("*")
+                .neq("user_id", userId);
 
-            if (error) {
-                console.error(error);
-            } else {
-                setProsjekter(data ?? []);
-            }
+            setMineProsjekter(mineProsjekter ?? []);
+            setAndreProsjekter(andreProsjekter ?? []);
         };
 
         fetchProsjekter();
-    }, []);
+    }, [session]);
 
     return (
         <div className="max-w-2xl mx-auto">
-            <Box className="p-4">
-                <Heading level="2" size="medium">Strikkeprosjekter</Heading>
-                    {prosjekter.map(prosjekt => (
-                        <Strikkeprosjekt key={prosjekt.id} tittel={prosjekt.tittel} img={prosjekt.bilde} />
+            <Box className="py-6">
+                <Heading level="2" size="medium">Mine prosjekter</Heading>
+                <div className="flex flex-col gap-4">
+                    {mineProsjekter.map(prosjekt => (
+                        <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel} img={prosjekt.bilde} reactions={prosjekt.reactions} />
                     ))}
+                </div>
             </Box>
             <StrikkeprosjektForm />
+            <Box className="py-6">
+                <Heading level="2" size="medium">Bli inspirert av andre</Heading>
+                <div className="flex flex-col gap-4">
+                    {andreProsjekter.map(prosjekt => (
+                        <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel}
+                                         img={prosjekt.bilde} reactions={prosjekt.reactions}/>
+                    ))}
+                </div>
+            </Box>
         </div>
-    );
+);
 }

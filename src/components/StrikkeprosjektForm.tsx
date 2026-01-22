@@ -37,7 +37,8 @@ export default function StrikkeprosjektForm() {
         <form
             onSubmit={handleSubmit}
         >
-            <Heading level="2" size="medium" className="text-xl font-bold">Nytt strikkeprosjekt</Heading>
+            <Heading level="2" size="medium" className="text-xl font-bold">Nytt prosjekt</Heading>
+            <div className="space-y-2">
             <TextField
                 label="Tittel"
                 type="text"
@@ -54,10 +55,12 @@ export default function StrikkeprosjektForm() {
             <Button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+                data-color="neutral"
+                className="text-white px-4 py-2 rounded disabled:opacity-50"
             >
                 {loading ? "Lagrer..." : "Opprett prosjekt"}
             </Button>
+            </div>
         </form>
         </Box>
     );
