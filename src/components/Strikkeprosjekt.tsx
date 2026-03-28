@@ -1,7 +1,10 @@
-import {BodyShort, Box, Heading, Tag} from "@navikt/ds-react";
+import {BodyShort, Box, Heading} from "@navikt/ds-react";
 import {supabase} from "../lib/supabase.ts";
 import {useSession} from "../context/SessionContext.tsx";
 import {useEffect, useState} from "react";
+import {RoundCounter} from "./RoundCounter.tsx";
+import type {RoundCounterType} from "../types.ts";
+import {AddCounterForm} from "./AddCounterForm.tsx";
 
 type Reaction = {
     emoji: string;
@@ -16,14 +19,15 @@ interface Props {
     reactions?: Reaction[];
 }
 
-export default function Strikkeprosjekt({id, tittel, img, description, reactions}: Props) {
+export default function Strikkeprosjekt({id, tittel, img, description}: Props) {
     const session = useSession();
-    const [localReactions, setLocalReactions] = useState<Reaction[]>(reactions || []);
-
-    if (!session) return; // do nothing if session is null
+    /*const [localReactions, setLocalReactions] = useState<Reaction[]>(reactions || []);*/
+    const [counters, setCounters] = useState<RoundCounterType[]>([]);
 
     useEffect(() => {
-        const fetchReactions = async () => {
+        if (!session) return;
+
+        /*const fetchReactions = async () => {
             const { data, error } = await supabase
                 .from("project_reactions")
                 .select("*")
@@ -31,13 +35,32 @@ export default function Strikkeprosjekt({id, tittel, img, description, reactions
 
             if (error) console.error(error);
             else setLocalReactions(data || []);
-        };
+        };*/
 
-        fetchReactions();
-    }, [id]);
+        /*fetchReactions();*/
+
+        const fetchCounts = async () => {
+            const {data, error} = await supabase
+                .from("round_counters")
+                .select("*")
+                .eq("strikkeprosjekt_id", id);
+
+            if (error) {
+                console.error("Kunne ikke hente tellere:", error.message);
+                return;
+            }
+
+            if (data) {
+                setCounters(data);
+            }
+        }
+
+        fetchCounts();
+    }, [id, session]);
 
 
-    const addReaction = async (projectId: number, emoji: string, session: any) => {
+
+/*    const addReaction = async (projectId: number, emoji: string, session: any) => {
         if (!session) return;
 
         const {error, data} = await supabase
@@ -47,7 +70,7 @@ export default function Strikkeprosjekt({id, tittel, img, description, reactions
 
         if (error) console.error(error);
         else if (data) setLocalReactions([...localReactions, ...data]);
-    };
+    };*/
 
     return (
         <>
@@ -57,12 +80,17 @@ export default function Strikkeprosjekt({id, tittel, img, description, reactions
                 <BodyShort size="small">
                         {description}
                 </BodyShort>
+                {counters?.map(counter => (
+                    <RoundCounter key={counter.id} counter={counter} />
+                ))}
+                <AddCounterForm strikkeprosjektId={id} />
             <div className="flex justify-between">
-                <div className="flex gap-2">
+                {/*<div className="flex gap-2">
                     <Tag size="small" variant="outline">
                         Ferdig
                     </Tag>
-                </div>
+                </div>*/}
+                {/*{session && (
                 <div className="flex gap-2">
                     {["🤩", "😍️", "🎉", "🫶🏻"].map(emoji => {
                         const count = localReactions.filter(r => r.emoji === emoji).length;
@@ -80,6 +108,7 @@ export default function Strikkeprosjekt({id, tittel, img, description, reactions
                         );
                     })}
                 </div>
+                    )}*/}
             </div>
             </Box>
         </>

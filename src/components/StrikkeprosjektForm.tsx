@@ -5,6 +5,7 @@ import {Box, Button, Heading, TextField} from "@navikt/ds-react";
 export default function StrikkeprosjektForm() {
     const [tittel, setTittel] = useState("");
     const [bilde, setBilde] = useState("");
+    const [beskrivelse, setBeskrivelse] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -19,6 +20,7 @@ export default function StrikkeprosjektForm() {
                 {
                     tittel,
                     bilde: bilde || null,
+                    beskrivelse
                 },
             ]);
 
@@ -27,6 +29,7 @@ export default function StrikkeprosjektForm() {
         } else {
             setTittel("");
             setBilde("");
+            setBeskrivelse("");
         }
 
         setLoading(false);
@@ -44,6 +47,13 @@ export default function StrikkeprosjektForm() {
                 type="text"
                 value={tittel}
                 onChange={(e) => setTittel(e.target.value)}
+                required
+            />
+            <TextField
+                label="Beskrivelse"
+                type="text"
+                value={beskrivelse}
+                onChange={(e) => setBeskrivelse(e.target.value)}
                 required
             />
             <TextField type="text" label="Bilde (URL)" value={bilde} onChange={(e) => setBilde(e.target.value)} />

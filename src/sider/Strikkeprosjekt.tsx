@@ -15,7 +15,8 @@ type Prosjekt = {
     user_id?: string;
     tittel?: string;
     bilde?: string;
-    reactions?: Reaction[]; // <-- reactions is optional array of Reaction
+    reactions?: Reaction[];
+    beskrivelse?: string;
 };
 
 export default function Strikkeprosjekter() {
@@ -51,7 +52,7 @@ export default function Strikkeprosjekter() {
                 <Heading level="2" size="medium">Mine prosjekter</Heading>
                 <div className="flex flex-col gap-4">
                     {mineProsjekter.map(prosjekt => (
-                        <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel} img={prosjekt.bilde} reactions={prosjekt.reactions} />
+                        <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel} img={prosjekt.bilde} reactions={prosjekt.reactions} description={prosjekt.beskrivelse} />
                     ))}
                 </div>
             </Box>
@@ -61,7 +62,7 @@ export default function Strikkeprosjekter() {
                 <div className="flex flex-col gap-4">
                     {andreProsjekter.map(prosjekt => (
                         <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel}
-                                         img={prosjekt.bilde} reactions={prosjekt.reactions}/>
+                                         img={prosjekt.bilde} reactions={prosjekt.reactions} description={prosjekt.beskrivelse}/>
                     ))}
                 </div>
             </Box>
