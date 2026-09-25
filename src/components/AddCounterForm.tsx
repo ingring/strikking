@@ -1,20 +1,19 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {supabase} from "../lib/supabase.ts";
-import {BodyShort, Button, Checkbox, Modal, TextField, VStack} from "@navikt/ds-react";
-import { PlusMinusSlashIcon } from '@navikt/aksel-icons';
+import { BodyShort, Button, Checkbox, Modal, TextField, VStack} from "@navikt/ds-react";
 
 type Props = {
     strikkeprosjektId: number;
+    open: boolean;
+    onClose: () => void;
 };
 
-export function AddCounterForm({ strikkeprosjektId }: Props) {
+export function AddCounterForm({ strikkeprosjektId, open, onClose }: Props) {
     const [name, setName] = useState("");
     const [useSmallRounds, setUseSmallRounds] = useState(false);
     const [maxSmallRounds, setMaxSmallRounds] = useState(8);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const ref = useRef<HTMLDialogElement>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,11 +42,11 @@ export function AddCounterForm({ strikkeprosjektId }: Props) {
 
     return (
         <>
-        <Button data-color="neutral" onClick={() => ref.current?.showModal()} className="justify-self-start self-start">
-            <PlusMinusSlashIcon title="a11y-title" fontSize="1.5rem" className="inline mr-2" />
-            <BodyShort size="small" className="inline">Legg til ny teller</BodyShort>
-        </Button>
-        <Modal ref={ref} header={{ heading: "Legg til teller" }}>
+            <Modal
+                open={open}
+                onClose={onClose}
+                header={{ heading: "Legg til teller" }}
+            >
             <Modal.Body>
                 <form
                     onSubmit={handleSubmit}

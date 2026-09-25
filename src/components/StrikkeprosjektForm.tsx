@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import {Box, Button, Heading, TextField} from "@navikt/ds-react";
+import {ProsjektStatus} from "../types.ts";
 
 export default function StrikkeprosjektForm() {
     const [tittel, setTittel] = useState("");
@@ -20,7 +21,8 @@ export default function StrikkeprosjektForm() {
                 {
                     tittel,
                     bilde: bilde || null,
-                    beskrivelse
+                    beskrivelse,
+                    status: ProsjektStatus.IKKE_STARTET
                 },
             ]);
 

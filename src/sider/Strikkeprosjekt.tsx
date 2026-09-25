@@ -4,30 +4,17 @@ import Strikkeprosjekt from "../components/Strikkeprosjekt.tsx";
 import StrikkeprosjektForm from "../components/StrikkeprosjektForm.tsx";
 import {Box, Heading} from "@navikt/ds-react";
 import {useSession} from "../context/SessionContext.tsx";
-
-type Reaction = {
-    emoji: string;
-    user_id: string;
-};
-
-type Prosjekt = {
-    id: number;
-    user_id?: string;
-    tittel?: string;
-    bilde?: string;
-    reactions?: Reaction[];
-    beskrivelse?: string;
-};
+import {type Prosjekt} from "../types.ts";
 
 export default function Strikkeprosjekter() {
     const session = useSession();
     const [mineProsjekter, setMineProsjekter] = useState<Prosjekt[]>([]);
     const [andreProsjekter, setAndreProsjekter] = useState<Prosjekt[]>([]);
-
-    if (!session) return; // do nothing if session is null
-    const userId = session.user.id;
+    const userId = session?.user.id;
 
     useEffect(() => {
+        if (!userId) return;
+
         const fetchProsjekter = async () => {
             const { data: mineProsjekter } = await supabase
                 .from("strikkeprosjekt")
@@ -44,25 +31,27 @@ export default function Strikkeprosjekter() {
         };
 
         fetchProsjekter();
-    }, [session]);
+    }, [userId]);
+
+    if (!session) return null; // do nothing if session is null
 
     return (
         <div className="max-w-2xl mx-auto">
-            <Box className="py-6">
+            <Box className="py-10">
                 <Heading level="2" size="medium">Mine prosjekter</Heading>
                 <div className="flex flex-col gap-4">
                     {mineProsjekter.map(prosjekt => (
-                        <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel} img={prosjekt.bilde} reactions={prosjekt.reactions} description={prosjekt.beskrivelse} />
+                        <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel} img={prosjekt.bilde} reactions={prosjekt.reactions} description={prosjekt.beskrivelse} status={prosjekt.status}/>
                     ))}
                 </div>
             </Box>
             <StrikkeprosjektForm />
-            <Box className="py-6">
+            <Box className="py-10">
                 <Heading level="2" size="medium">Bli inspirert av andre</Heading>
                 <div className="flex flex-col gap-4">
                     {andreProsjekter.map(prosjekt => (
                         <Strikkeprosjekt key={prosjekt.id} id={prosjekt.id} tittel={prosjekt.tittel}
-                                         img={prosjekt.bilde} reactions={prosjekt.reactions} description={prosjekt.beskrivelse}/>
+                                         img={prosjekt.bilde} reactions={prosjekt.reactions} description={prosjekt.beskrivelse} status={prosjekt.status}/>
                     ))}
                 </div>
             </Box>

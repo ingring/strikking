@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@navikt/aksel-icons": "^8.16.2",
     "@navikt/ds-css": "^8.0.1",
     "@navikt/ds-react": "^8.0.1",
     "@supabase/auth-ui-react": "^0.4.7",
